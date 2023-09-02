@@ -5,8 +5,38 @@ headers = {
         "X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
     }
 
+async def user_data_followers(uid : int, offset : int, full_list : list) -> dict:
+    
+    url = f"https://instagram-scraper-20231.p.rapidapi.com/userfollowing/{uid}/100/{offset}"
 
-async def user_data_posts(uid : int, is_first : bool) -> dict:
+    headers = {
+        "X-RapidAPI-Key": "55453220d9msh8691df94bd03ef9p15447djsn954109d2e534",
+        "X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
+    }
+    
+    response = requests.get(url, headers=headers)
+    
+    data : dict = response.json()['data']
+    
+    main_data = {}
+    
+    for user in data['user']:
+        main_data['username'] = user['username']
+        main_data['profile_pic'] = user['profile_pic_url']
+        main_data['profile_url'] = f'https://instagram.com/{user["username"]}'
+    
+    full_list.append(main_data)
+    
+    try:
+        end_cursor = data['end_cursor']
+    except:
+        return full_list
+    
+    
+    
+    
+
+async def user_data_posts(uid : int) -> dict:
     # Здесь нужно реализовать:
     # Суммарное количество постов на странице
     # Суммарное количество просмотров постов на странице
@@ -42,14 +72,23 @@ async def user_data_posts(uid : int, is_first : bool) -> dict:
         video : bool = post['is_video']
 
         if video:
-            total_likes_count += post['video_view_count']
+            total_views_count += post['video_view_count']
+            
+            view_count = post['video_view_count']
         else:
             try:
-                for photos_edge in post['edge_sidecar_to_children']:
+                for photos_edge in post['edge_sidecar_to_children']['edges']:
                     photo = photos_edge['node']
-                    # Я остановился здесь. Время 2.58
+                    photos.append(photo['display_url'])
             except:
                 photos.append(post['display_url'])
+
+        likes_count = post['edge_media_preview_like']['count']
+        
+        total_likes_count += post['edge_media_preview_like']['count']
+        
+
+        
 
     return
 
@@ -68,7 +107,7 @@ async def user_data_main(username : str) -> dict:
     main_data['full_name'] = data['full_name']
     main_data['followers_count'] = data['edge_followed_by']['count']
     main_data['follows_count'] = data['edge_follow']['count']
-    main_data['profile_picture'] = data['profile_pic_url_hd']
+    main_data['profile_pic'] = data['profile_pic_url_hd']
     main_data['posts_count'] = sum(data["edge_felix_video_timeline"]['count'], data["edge_owner_to_timeline_media"]['count'])
 
     
