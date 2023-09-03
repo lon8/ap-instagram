@@ -42,14 +42,16 @@ async def user_data_posts(uid : int, is_first : bool) -> dict:
         video : bool = post['is_video']
 
         if video:
-            total_likes_count += post['video_view_count']
+            total_views_count += post['video_view_count']
         else:
             try:
-                for photos_edge in post['edge_sidecar_to_children']:
+                for photos_edge in post['edge_sidecar_to_children']['edges']:
                     photo = photos_edge['node']
-                    # Я остановился здесь. Время 2.58
+                    photos.append(photo['display_url'])
             except:
                 photos.append(post['display_url'])
+
+
 
     return
 
