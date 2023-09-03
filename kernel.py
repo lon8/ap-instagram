@@ -6,7 +6,7 @@ headers = {
         "X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
     }
 
-async def user_data_followers(uid : int, full_list : list, offset : int = 0, counter : int = 0):
+def user_data_followers(uid : int, full_list : list, offset : int = 0, counter : int = 0):
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/userfollowers/{uid}/100/{offset}"
 
@@ -19,14 +19,15 @@ async def user_data_followers(uid : int, full_list : list, offset : int = 0, cou
     
     data : dict = response.json()['data']
     
-    main_data = {}
+    
     
     for user in data['user']:
+        main_data = {}
         main_data['username'] = user['username']
         main_data['profile_pic'] = user['profile_pic_url']
         main_data['profile_url'] = f'https://instagram.com/{user["username"]}'
-    
-    full_list.append(main_data)
+        
+        full_list.append(main_data)
     
     if counter != 10:
         try:
@@ -35,8 +36,9 @@ async def user_data_followers(uid : int, full_list : list, offset : int = 0, cou
             user_data_followers(uid=uid, offset=end_cursor, full_list=full_list, counter=counter)
         except:
             return
+    else: return
 
-async def user_data_following(uid : int, full_list : list, offset : int = 0, counter : int = 0):
+def user_data_following(uid : int, full_list : list, offset : int = 0, counter : int = 0):
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/userfollowing/{uid}/100/{offset}"
 
@@ -49,14 +51,15 @@ async def user_data_following(uid : int, full_list : list, offset : int = 0, cou
     
     data : dict = response.json()['data']
     
-    main_data = {}
+    
     
     for user in data['user']:
+        main_data = {}
         main_data['username'] = user['username']
         main_data['profile_pic'] = user['profile_pic_url']
         main_data['profile_url'] = f'https://instagram.com/{user["username"]}'
     
-    full_list.append(main_data)
+        full_list.append(main_data)
     
     if counter != 10:
         try:
@@ -65,8 +68,9 @@ async def user_data_following(uid : int, full_list : list, offset : int = 0, cou
             user_data_following(uid=uid, offset=end_cursor, full_list=full_list, counter=counter)
         except:
             return
+    else: return
 
-async def user_data_posts(uid : int,
+def user_data_posts(uid : int,
                           full_list : list,
                           end_cursor : str = '%7Bend_cursor%7D',
                           counter : int = 0,
@@ -160,7 +164,7 @@ async def user_data_posts(uid : int,
     else: 
         return total_posts_count, total_likes_count, total_comments_count, total_views_count
 
-async def user_data_main(username : str) -> dict:
+def user_data_main(username : str) -> dict:
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/userinfo/{username}"
     
@@ -194,8 +198,12 @@ def kernel(username : str) -> dict:
 
     total_posts_count, total_likes_count, total_comments_count, total_views_count = user_data_posts(uid, posts_list)
     user_data_followers(uid, followers_list)
-    user_data_following(following_list)
+    user_data_following(uid, following_list)
 
+    result['total_posts_count'] = total_posts_count
+    result['total_comments_count'] = total_comments_count
+    result['total_views_count'] = total_views_count
+    result['total_likes_count'] = total_likes_count
     result['followers'] = followers_list
     result['following'] = following_list
     result['posts'] = posts_list

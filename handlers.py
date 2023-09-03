@@ -11,7 +11,7 @@ async def info():
 @router.post('/userInfo')
 async def parse_kernel(data : dict):
     try:
-        result = kernel(data['Username'])
+        result = kernel(data['username'])
 
         with open('result.json', 'w', encoding='utf-8') as file:
             json.dump(result, file, indent=4, ensure_ascii=False)
