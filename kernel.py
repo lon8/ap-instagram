@@ -1,19 +1,83 @@
 import datetime
+import threading
 import requests
 
 headers = {
-        "X-RapidAPI-Key": "55453220d9msh8691df94bd03ef9p15447djsn954109d2e534",
-        "X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
-    }
+	"X-RapidAPI-Key": "dac62b5a32mshffd641aeed22e7bp16a5bcjsnbd497ab8d5b7",
+	"X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
+}
+
+def post_likes(shortcode : str):
+    
+    url = f"https://instagram-scraper-20231.p.rapidapi.com/postlikes/{shortcode}/50/%7Bend_cursor%7D"
+    
+    response = requests.get(url, headers=headers)
+    
+    data = response.json()['data']
+    
+    result = []
+    
+    for likes in data['likes']:
+        like = likes['node']
+        
+        main_data = {}
+        
+        main_data['username'] = like['username']
+        main_data['profile_pic'] = like['profile_pic_url']
+        main_data['profile_url'] = f'https://instagram.com/{like["username"]}'
+        main_data['id'] = like["id"]
+        
+        result.append(main_data)
+        
+    return result
+
+def post_comments(shortcode : str):
+    
+    url = f"https://instagram-scraper-20231.p.rapidapi.com/postcomments/{shortcode}/%7Bend_cursor%7D/%7Bscraperid%7D"
+    
+    response = requests.get(url, headers=headers)
+    
+    data = response.json()['data']
+    
+    result = []
+    
+    for comment in data['comments']:
+        main_data = {}
+        
+        date = datetime.datetime.fromtimestamp(comment['created_at_utc'])
+        
+        main_data['date'] = str(date)
+        main_data['has_liked_comment'] = comment['has_liked_comment']
+        main_data['text'] = comment['text']
+        main_data['username'] = comment['user']['username']
+        main_data['profile_pic'] = comment['user']['profile_pic_url']
+        main_data['profile_url'] = f'https://instagram.com/{comment["user"]["username"]}'
+        main_data['id'] = comment["user_id"]
+        
+        result.append(main_data)
+        
+    return result
+    
+def run_multiple_threads(target_function, items):
+    # Создайте список потоков
+    threads = []
+
+    # Задайте количество потоков, которые вы хотите использовать
+    num_threads = 5
+
+    # Создайте и запустите каждый поток
+    for item in items:
+        thread = threading.Thread(target=target_function, args=(item,))
+        thread.start()
+        threads.append(thread)
+
+    # Дождитесь завершения всех потоков
+    for thread in threads:
+        thread.join()
 
 def user_data_followers(uid : int, full_list : list, offset : int = 0, counter : int = 0):
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/userfollowers/{uid}/100/{offset}"
-
-    headers = {
-        "X-RapidAPI-Key": "55453220d9msh8691df94bd03ef9p15447djsn954109d2e534",
-        "X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
-    }
     
     response = requests.get(url, headers=headers)
     
@@ -51,8 +115,6 @@ def user_data_following(uid : int, full_list : list, offset : int = 0, counter :
     
     data : dict = response.json()['data']
     
-    
-    
     for user in data['user']:
         main_data = {}
         main_data['username'] = user['username']
@@ -89,8 +151,16 @@ def user_data_posts(uid : int,
 
     for edge in data['edges']:
         post = edge['node']
-
+        
         main_data = {}
+        
+        shortcode = post["shortcode"]
+        
+        post_like : list = post_likes(shortcode)
+        post_comment : list = post_comments(shortcode)
+        main_data['likes'] = post_like
+        main_data['comments'] = post_comment
+        
         main_data['post_url'] = f"https://instagram.com/p/{post['shortcode']}"
 
         # Дата
