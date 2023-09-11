@@ -250,7 +250,7 @@ def user_data_main(username : str) -> dict:
     main_data['full_name'] = data['full_name']
     main_data['followers_count'] = data['edge_followed_by']['count']
     main_data['follows_count'] = data['edge_follow']['count']
-    main_data['profile_pic'] = data['profile_pic_url_hd']
+    main_data['avatar_link'] = data['profile_pic_url_hd']
     
     return main_data
 
@@ -266,16 +266,20 @@ def kernel(username : str) -> dict:
     following_list = []
     posts_list = []
 
+    data = {}
+    
     total_posts_count, total_likes_count, total_comments_count, total_views_count = user_data_posts(uid, posts_list)
     user_data_followers(uid, followers_list)
     user_data_following(uid, following_list)
 
-    result['total_posts_count'] = total_posts_count
-    result['total_comments_count'] = total_comments_count
-    result['total_views_count'] = total_views_count
-    result['total_likes_count'] = total_likes_count
-    result['followers'] = followers_list
-    result['following'] = following_list
-    result['posts'] = posts_list
+    data['total_posts'] = total_posts_count
+    data['total_comments'] = total_comments_count
+    data['total_views'] = total_views_count
+    data['total_likes'] = total_likes_count
+    data['followers'] = followers_list
+    data['following'] = following_list
+    data['posts'] = posts_list
+    
+    result['data'] = data
 
     return result

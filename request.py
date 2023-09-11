@@ -2,10 +2,10 @@ import json
 import requests
 
 data = {
-    'username': 'vladkanatov'
+    'uid': 'vladkanatov'
 }
 
-req = requests.post('http://127.0.0.1:8000/userInfo', json=data)
+req = requests.post('http://127.0.0.1:8000/', json=data)
 
 print(req.text)
 
