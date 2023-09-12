@@ -35,11 +35,13 @@ def post_comments(shortcode : str):
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/postcomments/{shortcode}/%7Bend_cursor%7D/%7Bscraperid%7D"
     
+		result = []
+
     response = requests.get(url, headers=headers)
-    
-    data = response.json()['data']
-    
-    result = []
+    try:    
+        data = response.json()['data']
+    except:
+	return result
     
     for comment in data['comments']:
         main_data = {}

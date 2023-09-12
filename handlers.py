@@ -10,12 +10,9 @@ router = APIRouter()
 
 @router.post('/')
 async def parse_kernel(data : dict):
-    try:
-        result = kernel(data['uid'])
+	result = kernel(data['uid'])
 
-        with open('result.json', 'w', encoding='utf-8') as file:
-            json.dump(result, file, indent=4, ensure_ascii=False)
+	with open('result.json', 'w', encoding='utf-8') as file:
+	    json.dump(result, file, indent=4, ensure_ascii=False)
 
-        return result
-    except KeyError:
-        raise HTTPException(400, "Key error. Check your json data")
+	return result
