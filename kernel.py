@@ -3,7 +3,7 @@ import threading
 import requests
 
 headers = {
-	"X-RapidAPI-Key": "dac62b5a32mshffd641aeed22e7bp16a5bcjsnbd497ab8d5b7",
+	"X-RapidAPI-Key": "618a643552msh68bf479e095e0aep1eca05jsnf3bb7b685754",
 	"X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
 }
 
