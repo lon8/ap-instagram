@@ -35,7 +35,7 @@ def post_comments(shortcode : str):
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/postcomments/{shortcode}/%7Bend_cursor%7D/%7Bscraperid%7D"
     
-		result = []
+    result = []
 
     response = requests.get(url, headers=headers)
     try:    
