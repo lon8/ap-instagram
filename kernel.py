@@ -13,9 +13,12 @@ def post_likes(shortcode : str):
     
     response = requests.get(url, headers=headers)
     
-    data = response.json()['data']
-    
     result = []
+    
+    try:
+        data = response.json()['data']
+    except:
+        return result
     
     for likes in data['likes']:
         like = likes['node']
