@@ -7,6 +7,8 @@ headers = {
 	"X-RapidAPI-Host": "instagram-scraper-20231.p.rapidapi.com"
 }
 
+p_counter = 0
+
 def post_likes(shortcode : str):
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/postlikes/{shortcode}/50/%7Bend_cursor%7D"
@@ -26,8 +28,8 @@ def post_likes(shortcode : str):
         main_data = {}
         
         main_data['username'] = like['username']
-        main_data['profile_pic'] = like['profile_pic_url']
-        main_data['profile_url'] = f'https://instagram.com/{like["username"]}'
+        main_data['icon_url'] = like['profile_pic_url']
+        main_data['profile_link'] = f'https://instagram.com/{like["username"]}'
         main_data['id'] = like["id"]
         
         result.append(main_data)
@@ -35,16 +37,16 @@ def post_likes(shortcode : str):
     return result
 
 def post_comments(shortcode : str):
-    
+
     url = f"https://instagram-scraper-20231.p.rapidapi.com/postcomments/{shortcode}/%7Bend_cursor%7D/%7Bscraperid%7D"
     
     result = []
-
+    
     response = requests.get(url, headers=headers)
-    try:    
+    try:
         data = response.json()['data']
     except:
-    	return result
+        return result
     
     for comment in data['comments']:
         main_data = {}
@@ -55,12 +57,13 @@ def post_comments(shortcode : str):
         main_data['has_liked_comment'] = comment['has_liked_comment']
         main_data['text'] = comment['text']
         main_data['username'] = comment['user']['username']
-        main_data['profile_pic'] = comment['user']['profile_pic_url']
-        main_data['profile_url'] = f'https://instagram.com/{comment["user"]["username"]}'
+        main_data['icon_url'] = comment['user']['profile_pic_url']
+        main_data['profile_link'] = f'https://instagram.com/{comment["user"]["username"]}'
         main_data['id'] = comment["user_id"]
         
         result.append(main_data)
-        
+
+
     return result
     
 def user_data_followers(uid : int, full_list : list, offset : int = 0, counter : int = 0):
@@ -76,8 +79,8 @@ def user_data_followers(uid : int, full_list : list, offset : int = 0, counter :
     for user in data['user']:
         main_data = {}
         main_data['username'] = user['username']
-        main_data['profile_pic'] = user['profile_pic_url']
-        main_data['profile_url'] = f'https://instagram.com/{user["username"]}'
+        main_data['icon_url'] = user['profile_pic_url']
+        main_data['profile_link'] = f'https://instagram.com/{user["username"]}'
         
         full_list.append(main_data)
     
@@ -106,8 +109,8 @@ def user_data_following(uid : int, full_list : list, offset : int = 0, counter :
     for user in data['user']:
         main_data = {}
         main_data['username'] = user['username']
-        main_data['profile_pic'] = user['profile_pic_url']
-        main_data['profile_url'] = f'https://instagram.com/{user["username"]}'
+        main_data['icon_url'] = user['profile_pic_url']
+        main_data['profile_link'] = f'https://instagram.com/{user["username"]}'
     
         full_list.append(main_data)
     
@@ -128,6 +131,8 @@ def user_data_posts(uid : int,
                           total_likes_count : int = 0,
                           total_posts_count : int = 0,
                           total_comments_count : int = 0) -> int:
+    
+    global p_counter
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/userposts/{uid}/1000/{end_cursor}" #%7Bend_cursor%7D
 
@@ -199,8 +204,16 @@ def user_data_posts(uid : int,
         main_data['comments_count'] = comments_count
 
         total_comments_count += comments_count
+        
+        # Текст поста
+        try:
+            main_data['text'] = ["edge_media_to_caption"]['edges'][0]['node']['text']
+        except:
+            main_data['text'] = ''
 
-        full_list.append(main_data)
+        if p_counter == 8:
+            full_list.append(main_data)
+        p_counter += 1
 
     next_page : bool = data['next_page']
 
@@ -238,11 +251,10 @@ def user_data_main(username : str) -> dict:
     main_data['full_name'] = data['full_name']
     main_data['followers_count'] = data['edge_followed_by']['count']
     main_data['follows_count'] = data['edge_follow']['count']
-    main_data['avatar_link'] = data['profile_pic_url_hd']
+    main_data['icon_url'] = data['profile_pic_url_hd']
     
     return main_data
 
-    
 
 def kernel(username : str) -> dict:
 
@@ -260,10 +272,10 @@ def kernel(username : str) -> dict:
     user_data_followers(uid, followers_list)
     user_data_following(uid, following_list)
 
-    data['total_posts'] = total_posts_count
-    data['total_comments'] = total_comments_count
-    data['total_views'] = total_views_count
-    data['total_likes'] = total_likes_count
+    data['posts_count'] = total_posts_count
+    data['comments_count'] = total_comments_count
+    data['views_count'] = total_views_count
+    data['likes_count'] = total_likes_count
     data['followers'] = followers_list
     data['following'] = following_list
     data['posts'] = posts_list
