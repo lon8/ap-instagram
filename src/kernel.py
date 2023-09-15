@@ -63,23 +63,6 @@ def post_comments(shortcode : str):
         
     return result
     
-def run_multiple_threads(target_function, items):
-    # Создайте список потоков
-    threads = []
-
-    # Задайте количество потоков, которые вы хотите использовать
-    num_threads = 5
-
-    # Создайте и запустите каждый поток
-    for item in items:
-        thread = threading.Thread(target=target_function, args=(item,))
-        thread.start()
-        threads.append(thread)
-
-    # Дождитесь завершения всех потоков
-    for thread in threads:
-        thread.join()
-
 def user_data_followers(uid : int, full_list : list, offset : int = 0, counter : int = 0):
     
     url = f"https://instagram-scraper-20231.p.rapidapi.com/userfollowers/{uid}/100/{offset}"
