@@ -4,7 +4,9 @@ from fastapi import APIRouter, HTTPException
 from src.kernel import kernel
 
 from src.celery_worker import process_task
+
 from src.views import calculate_analytics
+
 
 router = APIRouter()
 
