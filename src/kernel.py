@@ -103,8 +103,10 @@ def user_data_following(uid : int, full_list : list, offset : int = 0, counter :
     }
     
     response = requests.get(url, headers=headers)
-    
-    data : dict = response.json()['data']
+    try:
+        data : dict = response.json()['data']
+    except:
+        return
     
     for user in data['user']:
         main_data = {}
