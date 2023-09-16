@@ -207,33 +207,35 @@ def user_data_posts(uid : int,
         
         # Текст поста
         try:
-            main_data['text'] = ["edge_media_to_caption"]['edges'][0]['node']['text']
+            main_data['text'] = post["edge_media_to_caption"]['edges'][0]['node']['text']
         except:
             main_data['text'] = ''
 
+        full_list.append(main_data)
+        
         if p_counter == 8:
-            full_list.append(main_data)
+            return total_posts_count, total_likes_count, total_comments_count, total_views_count
         p_counter += 1
 
-    next_page : bool = data['next_page']
+    # next_page : bool = data['next_page']
 
-    if next_page:
-        end = data["end_cursor"]
-        counter += 1
-        user_data_posts(uid=uid,
-                        full_list=full_list,
-                        end_cursor=end,
-                        counter=counter,
-                        total_comments_count=total_comments_count,
-                        total_posts_count=total_posts_count,
-                        total_views_count=total_views_count)
-    elif counter == 10:
-          # Здесь очень некорректно сделал, но времени на то, чтобы это переделать нет, потому что надо
-          # переписывать очень много кода. По названиям переменных прочитайте, что к чему присвоитс япри
-          # окончании работы функции
-        return total_posts_count, total_likes_count, total_comments_count, total_views_count
-    else: 
-        return total_posts_count, total_likes_count, total_comments_count, total_views_count
+    # if next_page:
+    #     end = data["end_cursor"]
+    #     counter += 1
+    #     user_data_posts(uid=uid,
+    #                     full_list=full_list,
+    #                     end_cursor=end,
+    #                     counter=counter,
+    #                     total_comments_count=total_comments_count,
+    #                     total_posts_count=total_posts_count,
+    #                     total_views_count=total_views_count)
+    # elif counter == 10:
+    #       # Здесь очень некорректно сделал, но времени на то, чтобы это переделать нет, потому что надо
+    #       # переписывать очень много кода. По названиям переменных прочитайте, что к чему присвоитс япри
+    #       # окончании работы функции
+    #     return total_posts_count, total_likes_count, total_comments_count, total_views_count
+    # else: 
+    #     return total_posts_count, total_likes_count, total_comments_count, total_views_count
 
 def user_data_main(username : str) -> dict:
     

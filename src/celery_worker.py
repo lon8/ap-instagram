@@ -5,8 +5,8 @@ from src.views import calculate_analytics
 
 celery = Celery(
     'myapp',
-    broker='redis://localhost:6389/0',  # URL Redis сервера для Celery (ПОРТ ИЗМЕНЁН НА +10)
-    backend='redis://localhost:6389/0'  # URL Redis сервера для результатов выполнения задач (ПОРТ ИЗМЕНЁН НА +10)
+    broker='redis://localhost:6379/0',  # URL Redis сервера для Celery (ПОРТ ИЗМЕНЁН НА +10)
+    backend='redis://localhost:6379/0'  # URL Redis сервера для результатов выполнения задач (ПОРТ ИЗМЕНЁН НА +10)
 )
 
 json_data = {
