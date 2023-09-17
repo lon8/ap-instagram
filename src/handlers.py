@@ -14,19 +14,22 @@ json_data = {
 
 @router.post('/')
 async def parse_kernel(info: dict):
-    result = process_task.delay(info)
-    task_result = await get_result(result)  # Ждем завершения задачи
-    return {"task_id": result.id, "task_result": task_result}
-    # result = kernel(info['search_query'])
+    # result = process_task.delay(info)
+    # task_result = await get_result(result)  # Ждем завершения задачи
+    # return {"task_id": result.id, "task_result": task_result}
+    result = kernel(info['search_query'])
     
-    # result_stats = calculate_analytics(result, info['user_id'])
-    # json_data['search_query'] = info['search_query']
-    # json_data['data'] = result_stats
+    # with open('result.json', 'r', encoding='utf-8') as file:
+    #     result = json.load(file)
     
-    # with open('stats_result.json', 'w', encoding='utf-8') as file:
-    #     json.dump(json_data, file, indent=4, ensure_ascii=False)
+    result_stats = calculate_analytics(result, info['user_id'])
+    json_data['search_query'] = info['search_query']
+    json_data['data'] = result_stats
+    
+    with open('stats_result.json', 'w', encoding='utf-8') as file:
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
         
-    # return json_data
+    return json_data
 
 async def get_result(result):
     while not result.ready():

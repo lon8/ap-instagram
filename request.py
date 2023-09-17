@@ -7,11 +7,12 @@ headers = {
 }
 
 json_data = {
-    'search_query': 'vladkanatov',
+    'search_query': 'kostyukkova',
     'user_id': 52,
 }
 
-req = requests.post('http://127.0.0.1:8080/', json=json_data)
-# req = requests.post('http://127.0.0.1:8080/', json=json_data)
+# url = "https://instagram-scraper-20231.p.rapidapi.com/userfollowing/25025320/100/%7Bend_cursor%7D"
+
+req = requests.post('http://127.0.0.1:5000/', json=json_data)
 
 print(req.text)

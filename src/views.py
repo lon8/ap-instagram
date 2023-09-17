@@ -129,11 +129,14 @@ def calculate_analytics(json_response : dict, uid : int) -> dict:
     friends_data = json_response['data']['following']
     
     post_data = json_response['data']['posts']
+    
+    search_username = json_response['username']
+    
     post_data_list = extract_posts_data(post_data)
     
     additional_data = extract_additional_data(json_response)
-    top_likers_list = calculate_likes_views_comments_reposts(post_data)
-    top_commentators_list = calculate_top_commentators(post_data)
+    top_likers_list = calculate_likes_views_comments_reposts(post_data, username=search_username)
+    top_commentators_list = calculate_top_commentators(post_data, username=search_username)
     activity_rating_dict = defaultdict(lambda: {'icon_url': '', 'username': '', 'activity': 0})
     
     for person in top_likers_list:
@@ -148,7 +151,7 @@ def calculate_analytics(json_response : dict, uid : int) -> dict:
             if username:
                 activity_rating_dict[username]['icon_url'] = person.get('icon_url', '')
                 activity_rating_dict[username]['username'] = username
-                activity_rating_dict[uid]['activity'] += person.get('comments_count', 0)
+                activity_rating_dict[username]['activity'] += person.get('comments_count', 0)
 
     activity_rating_list = list(activity_rating_dict.values())
     activity_rating_list.sort(key=lambda x: x['activity'], reverse=True)
@@ -162,6 +165,8 @@ def calculate_analytics(json_response : dict, uid : int) -> dict:
         'likes_count': 0,
         'comments_count': 0,
         'views_count': 0,  # Опционально
+        'highlights_count': 0,
+        'taggets_count': 0,
         'activity_rating':
         {
             'persons': activity_rating_list

@@ -84,6 +84,8 @@ def extract_additional_data(data_json) -> dict:
         'views_count': additional_data['data']['views_count'],
         'likes_count': additional_data['data']['likes_count'],
         'comments_count': additional_data['data']['comments_count'],
+        'taggets_count': additional_data['data']['tagget_count'],
+        'highlights_count': additional_data['data']['highlights_count']
     }
     
     return result
@@ -106,7 +108,7 @@ def extract_posts_data(raw_posts) -> list:
 
 
 # функция подсчета лайков, просмотров, комментариев и репостов
-def calculate_likes_views_comments_reposts(posts_data):
+def calculate_likes_views_comments_reposts(posts_data, username):
     likers_counter = Counter()
 
     if isinstance(posts_data, list):
@@ -120,7 +122,7 @@ def calculate_likes_views_comments_reposts(posts_data):
     all_likers = []
     for post in posts:
         likers = post.get("likes", [])
-        all_likers = all_likers + likers
+        all_likers += likers
         for liker in likers:
             likers_counter[liker["username"]] += 1
 
@@ -128,6 +130,9 @@ def calculate_likes_views_comments_reposts(posts_data):
 
     top_likers_list = []
     for domain, count in top_10_likers:
+        
+        if domain == username: continue
+        
         value = find_index_by_value(all_likers, domain)
         
         top_likers_list.append({
@@ -139,7 +144,7 @@ def calculate_likes_views_comments_reposts(posts_data):
     return top_likers_list
 
 
-def calculate_top_commentators(posts_data) -> list:
+def calculate_top_commentators(posts_data, username) -> list:
     """Функция подсчета топ-10 комментаторов"""
     commentators_counter = Counter()
 
@@ -148,15 +153,18 @@ def calculate_top_commentators(posts_data) -> list:
     all_commentators = []
     for post in posts_data:
         commentators = post.get("comments", [])
-        all_commentators = all_commentators + commentators
+        all_commentators += commentators
         for commentator in commentators:
             commentators_counter[commentator["username"]] += 1
-            
+    
     top_10_commentators = commentators_counter.most_common(10)
     
     top_commentators_list = []
     for domain, count in top_10_commentators:
-        value = find_index_by_value(commentators, domain)
+        
+        if domain == username: continue
+        
+        value = find_index_by_value(all_commentators, domain)
         
         top_commentators_list.append({
             'icon_url': all_commentators[value]['icon_url'],
